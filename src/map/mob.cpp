@@ -39,6 +39,7 @@
 #include "pc.hpp"
 #include "pet.hpp"
 #include "quest.hpp"
+#include "mapreg.hpp"
 
 using namespace rathena;
 
@@ -1191,6 +1192,12 @@ int mob_spawn (struct mob_data *md)
 		clif_spawn(&md->bl);
 	skill_unit_move(&md->bl,tick,1);
 	mobskill_use(md, tick, MSC_SPAWN);
+
+	if(md->spawn && md->spawn->state.boss){
+		std::string mapregname = "$" + std::to_string(md->mob_id) + "_" + std::to_string(md->bl.m);
+		mapreg_setreg(reference_uid( add_str( mapregname.c_str() ), 0 ),2);
+	}
+
 	return 0;
 }
 
@@ -3055,6 +3062,16 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 	// MvP tomb [GreenBox]
 	if (battle_config.mvp_tomb_enabled && md->spawn->state.boss && map_getmapflag(md->bl.m, MF_NOTOMB) != 1)
 		mvptomb_create(md, mvp_sd ? mvp_sd->status.name : NULL, time(NULL));
+
+	if(md->spawn->state.boss){
+		std::string mapregname = "$" + std::to_string(md->db->id) + "_" + std::to_string(md->bl.m);
+		std::string mapregnamestr = mapregname + "$";
+		mapreg_setreg(reference_uid( add_str( mapregname.c_str() ), 0 ),1);
+		mapreg_setreg(reference_uid( add_str( mapregname.c_str() ), 1 ),md->bl.x);
+		mapreg_setreg(reference_uid( add_str( mapregname.c_str() ), 2 ),md->bl.y);
+		mapreg_setreg(reference_uid( add_str( mapregname.c_str() ), 3 ),time(NULL));
+		mapreg_setregstr(reference_uid( add_str( mapregnamestr.c_str() ), 4),mvp_sd ? mvp_sd->status.name : NULL);
+	}
 
 	if( !rebirth )
 		mob_setdelayspawn(md); //Set respawning.

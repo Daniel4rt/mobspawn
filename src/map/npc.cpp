@@ -32,6 +32,7 @@
 #include "pc.hpp"
 #include "pet.hpp"
 #include "script.hpp" // script_config
+#include "mapreg.hpp"
 
 struct npc_data* fake_nd;
 
@@ -2656,7 +2657,7 @@ struct npc_data* npc_add_warp(char* name, short from_mapid, short from_x, short 
  * @param w1 : word 1 before tab (<from map name>,<fromX>,<fromY>,<facing>)
  * @param w2 : word 2 before tab (warp), keyword that sent us in this parsing
  * @param w3 : word 3 before tab (<warp name>)
- * @param w4 : word 4 before tab (<spanx>,<spany>,<to mapname>,<toX>,<toY>)
+ * @param w4 : word 4 before tab (<spanx>,<spany>,<to map name>,<toX>,<toY>)
  * @param start : index to start parsing
  * @param buffer : lines to parses
  * @param filepath : filename with path wich we are parsing
@@ -3896,6 +3897,52 @@ void npc_parse_mob2(struct spawn_data* mob)
 	for( i = mob->active; i < mob->num; ++i )
 	{
 		struct mob_data* md = mob_spawn_dataset(mob);
+		if(md->state.boss){
+			std::string mapregname = "$" + std::to_string(md->db->id) + "_" + std::to_string(md->bl.m);
+			if(1 == mapreg_readreg(reference_uid( add_str( mapregname.c_str() ), 0 ))){ //1 = dead - 2 = alive
+				long int timer = static_cast<long int>(mapreg_readreg(reference_uid(add_str(mapregname.c_str()),3)));
+				long int now = static_cast<long int>(time(NULL));
+				long int difftime = mob->delay1; //Base respawn time
+				if (mob->delay2) //random variance
+					difftime+= rnd()%mob->delay2;
+				difftime = now - timer - (difftime/1000);
+				if(difftime < 0){ //mvp is still dead
+					if (battle_config.mvp_tomb_enabled && map_getmapflag(md->bl.m, MF_NOTOMB) != 1){ //is tomb enabled ?
+						std::string mapregnamestr = mapregname + "$";
+						int old_pos_x = md->bl.x;
+						int old_pos_y = md->bl.y;
+						md->bl.x = static_cast<int16>(mapreg_readreg(reference_uid(add_str(mapregname.c_str()),1)));
+						md->bl.y = static_cast<int16>(mapreg_readreg(reference_uid(add_str(mapregname.c_str()),2)));
+						char* killerid = mapreg_readregstr(reference_uid(add_str(mapregnamestr.c_str()),4));
+						mvptomb_create(md, killerid, timer);
+						md->bl.x= old_pos_x;
+						md->bl.y= old_pos_y;
+					}
+					difftime = abs(difftime)*1000;
+					//Apply the spawn delay fix
+					std::shared_ptr<s_mob_db> db = mob_db.find(md->db->id);
+					if (status_has_mode(&db->status,MD_STATUSIMMUNE)) { // Status Immune
+						if (battle_config.boss_spawn_delay != 100) {
+							difftime = difftime/100*battle_config.boss_spawn_delay;
+						}
+					} else if (status_has_mode(&db->status,MD_IGNOREMELEE|MD_IGNOREMAGIC|MD_IGNORERANGED|MD_IGNOREMISC)) { // Plant type
+						if (battle_config.plant_spawn_delay != 100) {
+							difftime = difftime/100*battle_config.plant_spawn_delay;
+						}
+					} else if (battle_config.mob_spawn_delay != 100) {	//Normal mobs
+						difftime = difftime/100*battle_config.mob_spawn_delay;
+					}
+					if (difftime < 5000) //Monsters should never respawn faster than within 5 seconds
+						difftime = 5000;
+					if( md->spawn_timer != INVALID_TIMER )
+						delete_timer(md->spawn_timer, mob_delayspawn);
+					md->spawn = mob;
+					md->spawn->active++;
+					md->spawn_timer = add_timer(gettick()+difftime,mob_delayspawn,md->bl.id,0);
+					continue;
+				}
+			}
+		}
 		md->spawn = mob;
 		md->spawn->active++;
 		mob_spawn(md);
