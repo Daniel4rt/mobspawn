@@ -1106,6 +1106,8 @@ int mob_spawn (struct mob_data *md)
 	unsigned int tick = gettick();
 	int c =0;
 
+	struct map_session_data *mvp_sd = NULL;
+
 	md->last_thinktime = tick;
 	if (md->bl.prev != NULL)
 		unit_remove_map(&md->bl,CLR_RESPAWN);
