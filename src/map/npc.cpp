@@ -7,6 +7,8 @@
 #include <map>
 #include <stdlib.h>
 #include <vector>
+#include <string>
+#include <memory>
 
 #include "../common/cbasetypes.hpp"
 #include "../common/db.hpp"
@@ -3921,7 +3923,7 @@ void npc_parse_mob2(struct spawn_data* mob)
 					difftime = abs(difftime)*1000;
 					//Apply the spawn delay fix
 					std::shared_ptr<s_mob_db> db = mob_db.find(md->db->id);
-					if (status_has_mode(&db->status,MD_STATUSIMMUNE)) { // Status Immune
+					if (status_has_mode(&db->status,MD_STATUS_IMMUNE)) { // Status Immune
 						if (battle_config.boss_spawn_delay != 100) {
 							difftime = difftime/100*battle_config.boss_spawn_delay;
 						}
