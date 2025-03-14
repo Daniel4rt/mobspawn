@@ -3900,13 +3900,13 @@ void npc_parse_mob2(struct spawn_data* mob)
 	{
 		struct mob_data* md = mob_spawn_dataset(mob);
 		if(md->state.boss){
-			std::string mapregname = "$" + std::to_string(md->db->id) + "_" + std::to_string(md->bl.m);
+			std::string mapregname = "$" + std::to_string(md->db->vd.class_) + "_" + std::to_string(md->bl.m);
 			if(1 == mapreg_readreg(reference_uid( add_str( mapregname.c_str() ), 0 ))){ //1 = dead - 2 = alive
 				long int timer = static_cast<long int>(mapreg_readreg(reference_uid(add_str(mapregname.c_str()),3)));
 				long int now = static_cast<long int>(time(NULL));
 				long int difftime = mob->delay1; //Base respawn time
 				if (mob->delay2) //random variance
-					difftime+= rnd()%mob->delay2;
+					difftime+= rand()%mob->delay2;
 				difftime = now - timer - (difftime/1000);
 				if(difftime < 0){ //mvp is still dead
 					if (battle_config.mvp_tomb_enabled && map_getmapflag(md->bl.m, MF_NOTOMB) != 1){ //is tomb enabled ?
@@ -3922,12 +3922,11 @@ void npc_parse_mob2(struct spawn_data* mob)
 					}
 					difftime = abs(difftime)*1000;
 					//Apply the spawn delay fix
-					std::shared_ptr<s_mob_db> db = mob_db.find(md->db->id);
-					if (status_has_mode(&db->status,MD_STATUS_IMMUNE)) { // Status Immune
+					if (status_has_mode(&md->status,MD_STATUS_IMMUNE)) { // Status Immune
 						if (battle_config.boss_spawn_delay != 100) {
 							difftime = difftime/100*battle_config.boss_spawn_delay;
 						}
-					} else if (status_has_mode(&db->status,MD_IGNOREMELEE|MD_IGNOREMAGIC|MD_IGNORERANGED|MD_IGNOREMISC)) { // Plant type
+					} else if (status_has_mode(&md->status,MD_IGNOREMELEE|MD_IGNOREMAGIC|MD_IGNORERANGED|MD_IGNOREMISC)) { // Plant type
 						if (battle_config.plant_spawn_delay != 100) {
 							difftime = difftime/100*battle_config.plant_spawn_delay;
 						}
