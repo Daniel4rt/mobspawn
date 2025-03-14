@@ -3892,6 +3892,8 @@ static const char* npc_parse_function(char* w1, char* w2, char* w3, char* w4, co
  * Parse Mob 2 - Actually Spawns Mob
  * [Wizputer]
  *------------------------------------------*/
+std::map<int, long int> mvp_death_timers; // Variable persistente para almacenar el tiempo de muerte del MVP
+
 void npc_parse_mob2(struct spawn_data* mob)
 {
 	int i;
@@ -3903,6 +3905,10 @@ void npc_parse_mob2(struct spawn_data* mob)
 			std::string mapregname = "$" + std::to_string(md->db->vd.class_) + "_" + std::to_string(md->bl.m);
 			if(1 == mapreg_readreg(reference_uid( add_str( mapregname.c_str() ), 0 ))){ //1 = dead - 2 = alive
 				long int timer = static_cast<long int>(mapreg_readreg(reference_uid(add_str(mapregname.c_str()),3)));
+				// Usar el tiempo de muerte almacenado si existe
+				if (mvp_death_timers.find(md->bl.id) != mvp_death_timers.end()) {
+					timer = mvp_death_timers[md->bl.id];
+				}
 				long int now = static_cast<long int>(time(NULL));
 				long int difftime = mob->delay1; //Base respawn time
 				if (mob->delay2) //random variance
@@ -3921,6 +3927,8 @@ void npc_parse_mob2(struct spawn_data* mob)
 						md->bl.y= old_pos_y;
 					}
 					difftime = abs(difftime)*1000;
+					// Guardar el tiempo de muerte del MVP
+					mvp_death_timers[md->bl.id] = timer;
 					//Apply the spawn delay fix
 					if (status_has_mode(&md->status,MD_STATUS_IMMUNE)) { // Status Immune
 						if (battle_config.boss_spawn_delay != 100) {
