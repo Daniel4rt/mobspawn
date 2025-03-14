@@ -224,6 +224,7 @@ TIMER_FUNC(mvptomb_delayspawn){
 void mvptomb_create(struct mob_data *md, char *killer, time_t time)
 {
 	struct npc_data *nd;
+	struct map_session_data *mvp_sd = NULL; // Declarar mvp_sd
 
 	if ( md->tomb_nid )
 		mvptomb_destroy(md);
@@ -1694,7 +1695,7 @@ static bool mob_ai_sub_hard(struct mob_data *md, unsigned int tick)
 	enum e_mode mode;
 	int view_range, can_move;
 
-	if(md->bl.prev == nullptr || md->status.hp == 0)
+	if(md->bl.prev == NULL || md->status.hp == 0)
 		return false;
 
 	if (DIFF_TICK(tick, md->last_thinktime) < MIN_MOBTHINKTIME)
