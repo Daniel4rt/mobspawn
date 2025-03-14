@@ -2,6 +2,7 @@
 // For more information, see LICENCE in the main folder
 
 #include "clif.hpp"
+#include "disif.hpp"
 
 #include <cstdarg>
 #include <cstdio>
