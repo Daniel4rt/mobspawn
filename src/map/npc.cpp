@@ -2407,7 +2407,7 @@ int npc_addsrcfile(const char* name, bool loadscript)
 	else
 		file_prev->next = file;
 
-	if (loadscript)
+	if( loadscript )
 		return npc_parsesrcfile(file->name, true);
 
 	return 1;
@@ -2863,7 +2863,7 @@ static const char* npc_parse_shop(char* w1, char* w2, char* w3, char* w4, const 
 				break;
 			default:
 				if (sscanf(p, ",%6hu:%11d", &nameid2, &value) != 2) {
-					ShowError("npc_parse_shop: Invalid item definition in file '%s', line '%d'. Ignoring the rest of the line...\n * w1=%s\n * w2=%s\n * w3=%s\n * w4=%s\n", filepath, strline(buffer, start - buffer), w1, w2, w3, w4);
+					ShowError("npc_parse_shop: Invalid item definition in file '%s', line '%d'. Ignoring the rest of the line...\n * w1=%s\n * w2=%s\n * w3=%s\n * w4=%s\n", filepath, strline(buffer,start-buffer), w1, w2, w3, w4);
 					skip = true;
 				}
 				break;
@@ -3908,6 +3908,9 @@ void npc_parse_mob2(struct spawn_data* mob)
 				// Usar el tiempo de muerte almacenado si existe
 				if (mvp_death_timers.find(md->bl.id) != mvp_death_timers.end()) {
 					timer = mvp_death_timers[md->bl.id];
+				} else {
+					// Guardar el tiempo de muerte del MVP
+					mvp_death_timers[md->bl.id] = timer;
 				}
 				long int now = static_cast<long int>(time(NULL));
 				long int difftime = mob->delay1; //Base respawn time
@@ -3927,9 +3930,7 @@ void npc_parse_mob2(struct spawn_data* mob)
 						md->bl.y= old_pos_y;
 					}
 					difftime = abs(difftime)*1000;
-					// Guardar el tiempo de muerte del MVP
-					mvp_death_timers[md->bl.id] = timer;
-					//Apply the spawn delay fix
+						//Apply the spawn delay fix
 					if (status_has_mode(&md->status,MD_STATUS_IMMUNE)) { // Status Immune
 						if (battle_config.boss_spawn_delay != 100) {
 							difftime = difftime/100*battle_config.boss_spawn_delay;
