@@ -851,7 +851,6 @@ void reload_disif(void) {
 	discord.connect_timer = add_timer(gettick() + 10000, check_connect_discord_server, 0, 0);
 }
 
-
 void stop_disif(void) {
 	set_eof(discord.fd);
 	discord.state = DiscordState::stopped;
