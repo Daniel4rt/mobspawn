@@ -422,13 +422,13 @@ static std::string parse_item_link(const std::string &msg) {
 	std::smatch match;
 	std::string retstr = msg;
 	while (std::regex_search(retstr, match, item_regex)) {
-		auto itemdb = item_db.find(base62_decode(match[4].str()));
+		auto itemdb = itemdb_search(base62_decode(match[4].str()));
 		if (!itemdb) {
 			ShowError("Tried to parse itemlink for unknown item %s.\n", match[4].str().c_str());
 			return msg;
 		}
 
-		retstr = std::regex_replace(retstr, item_regex, "!<!<" + match[1].str() + ">!>![" + itemdb->name + "]",
+		retstr = std::regex_replace(retstr, item_regex, "!<!<" + match[1].str() + ">!>![" + itemdb_name(base62_decode(match[4].str())) + "]",
 									std::regex_constants::format_first_only);
 	}
 	return retstr;
