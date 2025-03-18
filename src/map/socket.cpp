@@ -218,12 +218,6 @@ int naddr_ = 0;
 
 struct socket_data* session[FD_SETSIZE];
 
-#ifdef SEND_SHORTLIST
-int send_shortlist_array[FD_SETSIZE];
-size_t send_shortlist_count = 0;
-uint32 send_shortlist_set[(FD_SETSIZE + 31) / 32];
-#endif
-
 // Definiciones de funciones duplicadas
 int null_recv(int fd) { return 0; }
 int null_send(int fd) { return 0; }
@@ -623,6 +617,12 @@ static time_t socket_data_last_tick = 0;
 // Maximum size of pending data in the write fifo. (for non-server connections)
 // The connection is closed if it goes over the limit.
 #define WFIFO_MAX (1*1024*1024)
+
+#ifdef SEND_SHORTLIST
+int send_shortlist_array[FD_SETSIZE];// we only support FD_SETSIZE sockets, limit the array to that
+size_t send_shortlist_count = 0;// how many fd's are in the shortlist
+uint32 send_shortlist_set[(FD_SETSIZE+31)/32];// to know if specific fd's are already in the shortlist
+#endif
 
 static int create_session(int fd, RecvFunc func_recv, SendFunc func_send, ParseFunc func_parse);
 

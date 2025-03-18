@@ -334,9 +334,4 @@ extern size_t send_shortlist_count;
 extern uint32 send_shortlist_set[(FD_SETSIZE + 31) / 32];
 #endif
 
-// Declaraciones de funciones
-extern int null_recv(int fd);
-extern int null_send(int fd);
-extern int null_parse(int fd);
-
 #endif /* SOCKET_HPP */
