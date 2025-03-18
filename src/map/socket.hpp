@@ -318,4 +318,25 @@ void send_shortlist_add_fd(int fd);
 void send_shortlist_do_sends();
 #endif
 
+// Declaraciones de variables globales
+extern fd_set readfds;
+extern int fd_max;
+extern time_t last_tick;
+extern time_t stall_time;
+extern uint32 addr_[16];
+extern int naddr_;
+
+extern struct socket_data* session[FD_SETSIZE];
+
+#ifdef SEND_SHORTLIST
+extern int send_shortlist_array[FD_SETSIZE];
+extern size_t send_shortlist_count;
+extern uint32 send_shortlist_set[(FD_SETSIZE + 31) / 32];
+#endif
+
+// Declaraciones de funciones
+int null_recv(int fd);
+int null_send(int fd);
+int null_parse(int fd);
+
 #endif /* SOCKET_HPP */
