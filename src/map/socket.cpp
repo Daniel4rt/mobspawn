@@ -209,19 +209,19 @@ char* sErr(int code)
 	#define MSG_NOSIGNAL 0
 #endif
 
-fd_set readfds;
-int fd_max;
-time_t last_tick;
-time_t stall_time = 60;
-uint32 addr_[16];
-int naddr_ = 0;
+// Eliminar definiciones duplicadas
+// int null_recv(int fd) { return 0; }
+// int null_send(int fd) { return 0; }
+// int null_parse(int fd) { return 0; }
 
-struct socket_data* session[FD_SETSIZE];
+// fd_set readfds;
+// int fd_max;
+// time_t last_tick;
+// time_t stall_time = 60;
+// uint32 addr_[16];
+// int naddr_ = 0;
 
-// Definiciones de funciones duplicadas
-int null_recv(int fd) { return 0; }
-int null_send(int fd) { return 0; }
-int null_parse(int fd) { return 0; }
+// struct socket_data* session[FD_SETSIZE];
 
 // (^~_~^) Gepard Shield Start
 

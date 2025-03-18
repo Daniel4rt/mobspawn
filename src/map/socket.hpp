@@ -334,4 +334,24 @@ extern size_t send_shortlist_count;
 extern uint32 send_shortlist_set[(FD_SETSIZE + 31) / 32];
 #endif
 
+// Declarar como extern para evitar múltiples definiciones
+extern int null_recv(int fd);
+extern int null_send(int fd);
+extern int null_parse(int fd);
+
+extern fd_set readfds;
+extern int fd_max;
+extern time_t last_tick;
+extern time_t stall_time;
+extern uint32 addr_[16];
+extern int naddr_;
+
+extern struct socket_data* session[FD_SETSIZE];
+
+#ifdef SEND_SHORTLIST
+extern int send_shortlist_array[FD_SETSIZE];
+extern size_t send_shortlist_count;
+extern uint32 send_shortlist_set[(FD_SETSIZE + 31) / 32];
+#endif
+
 #endif /* SOCKET_HPP */
