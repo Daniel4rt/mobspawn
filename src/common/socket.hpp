@@ -253,8 +253,7 @@ extern bool session_isActive(int fd);
 // Function prototype declaration
 
 int make_listen_bind(uint32 ip, uint16 port);
-int make_connection(uint32 ip, uint16 port, bool silent, int timeout, bool nonblocking=false);
-int add_readfd(int fd, uint32 ip);
+int make_connection(uint32 ip, uint16 port, bool silent, int timeout);
 int realloc_fifo(int fd, unsigned int rfifo_size, unsigned int wfifo_size);
 int realloc_writefifo(int fd, size_t addition);
 int WFIFOSET(int fd, size_t len);
@@ -317,10 +316,6 @@ void set_eof(int fd);
 void send_shortlist_add_fd(int fd);
 // Do pending network sends (and eof handling) from the shortlist.
 void send_shortlist_do_sends();
-#endif
-
-#ifdef WIN32
-SOCKET fd2sock_ext(int fd);
 #endif
 
 #endif /* SOCKET_HPP */

@@ -65,7 +65,7 @@ obj:
 	
 obj/%.o: %.cpp $(CHAR_H) $(COMMON_H) $(LIBCONFIG_H) $(YAML_CPP_H)
 	@echo "	CXX	$<"
-	@g++ -g -O2 -std=c++11 $(COMMON_INCLUDE) $(LIBCONFIG_INCLUDE) $(YAML_CPP_INCLUDE) -I/usr/include/mariadb -I/usr/include/mariadb/mysql  -DMAXCONN=16384 -I../common -DHAS_TLS -fno-strict-aliasing -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DPACKETVER=20151104  -I/usr/include -DHAVE_MONOTONIC_CLOCK -c $(OUTPUT_OPTION) $<
+	@g++ -g -O2 -std=c++11 $(COMMON_INCLUDE) $(LIBCONFIG_INCLUDE) $(YAML_CPP_INCLUDE) -I/usr/include/mariadb -I/usr/include/mariadb/mysql  -DMAXCONN=16384 -I../common -DHAS_TLS -fno-strict-aliasing -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DPACKETVER=20180620  -I/usr/include -DHAVE_MONOTONIC_CLOCK -c $(OUTPUT_OPTION) $<
 
 # missing object files
 $(COMMON_AR):

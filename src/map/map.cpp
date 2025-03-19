@@ -33,7 +33,6 @@
 #include "chrif.hpp"
 #include "clan.hpp"
 #include "clif.hpp"
-#include "disif.hpp"
 #include "duel.hpp"
 #include "elemental.hpp"
 #include "guild.hpp"
@@ -5162,7 +5161,6 @@ void do_final(void){
 	do_final_vending();
 	do_final_buyingstore();
 	do_final_path();
-	do_final_disif();
 	CartAvailableConfig.clear();
 	CartCapacityConfig.clear();
 
@@ -5377,7 +5375,6 @@ int do_init(int argc, char *argv[])
 	ATCOMMAND_CONF_FILENAME = "conf/atcommand_athena.conf";
 	SCRIPT_CONF_NAME = "conf/script_athena.conf";
 	GRF_PATH_FILENAME = "conf/grf-files.txt";
-
 	safestrncpy(console_log_filepath, "./log/map-msg_log.log", sizeof(console_log_filepath));
 
 	/* Multilanguage */
@@ -5495,7 +5492,6 @@ int do_init(int argc, char *argv[])
 	do_init_duel();
 	do_init_vending();
 	do_init_buyingstore();
-	do_init_disif();
 
 	npc_event_do_oninit();	// Init npcs (OnInit)
 

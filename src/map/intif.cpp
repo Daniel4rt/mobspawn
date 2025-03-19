@@ -2,7 +2,6 @@
 // For more information, see LICENCE in the main folder
 
 #include "intif.hpp"
-#include "disif.hpp"
 
 #include <stdlib.h>
 
@@ -358,7 +357,7 @@ int intif_wis_reply(int id, int flag)
  * @param wisp_name
  * @param permission
  * @param mes
- * @return 0=no char-serv connected, 1=transfered
+ * @return 0:no char-serv connected, 1:transfered
  */
 int intif_wis_message_to_gm(char *wisp_name, int permission, char *mes)
 {
@@ -888,9 +887,9 @@ int intif_guild_leave(int guild_id,uint32 account_id,uint32 char_id,int flag,con
 	WFIFOW(inter_fd, 0) = 0x3034;
 	WFIFOL(inter_fd, 2) = guild_id;
 	WFIFOL(inter_fd, 6) = account_id;
-	WFIFOL(inter_fd, 10) = char_id;
-	WFIFOB(inter_fd, 14) = flag;
-	safestrncpy(WFIFOCP(inter_fd, 15),mes,40);
+	WFIFOL(inter_fd,10) = char_id;
+	WFIFOB(inter_fd,14) = flag;
+	safestrncpy(WFIFOCP(inter_fd,15),mes,40);
 	WFIFOSET(inter_fd,55);
 	return 1;
 }
@@ -913,10 +912,10 @@ int intif_guild_memberinfoshort(int guild_id,uint32 account_id,uint32 char_id,in
 	WFIFOW(inter_fd, 0) = 0x3035;
 	WFIFOL(inter_fd, 2) = guild_id;
 	WFIFOL(inter_fd, 6) = account_id;
-	WFIFOL(inter_fd, 10) = char_id;
-	WFIFOB(inter_fd, 14) = online;
-	WFIFOW(inter_fd, 15) = lv;
-	WFIFOW(inter_fd, 17) = class_;
+	WFIFOL(inter_fd,10) = char_id;
+	WFIFOB(inter_fd,14) = online;
+	WFIFOW(inter_fd,15) = lv;
+	WFIFOW(inter_fd,17) = class_;
 	WFIFOSET(inter_fd,19);
 	return 1;
 }

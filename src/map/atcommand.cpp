@@ -21,7 +21,6 @@
 #include "../common/utils.hpp"
 
 #include "achievement.hpp"
-#include "disif.hpp"
 #include "battle.hpp"
 #include "channel.hpp"
 #include "chat.hpp"
@@ -4002,7 +4001,7 @@ ACMD_FUNC(whosell)
 				clif_viewpoint(sd, 1, 1, b_sd[i]->bl.x, b_sd[i]->bl.y, i, 0xFFFFFF);
 		}
 		else
-			sprintf(output, "[%d] '%s' no estï¿½ en tiendas...", item_array[i]->nameid, item_array[i]->jname);
+			sprintf(output, "[%d] '%s' no está en tiendas...", item_array[i]->nameid, item_array[i]->jname);
 
 		clif_displaymessage(sd->fd, output);
 	}
@@ -4088,11 +4087,6 @@ ACMD_FUNC(myinfo)
  *
  *------------------------------------------*/
 void atcommand_doload();
-ACMD_FUNC(disablediscord) {
-	stop_disif();
-	return 0;
-}
-
 ACMD_FUNC(reload) {
 	nullpo_retr(-1, sd);
 
@@ -10794,8 +10788,6 @@ void atcommand_basecommands(void) {
 		ACMD_DEF2("reloadskilldb", reload),
 		ACMD_DEF2R("reloadscript", reload, ATCMD_NOSCRIPT),
 		ACMD_DEF2("reloadatcommand", reload),
-		ACMD_DEF2("reloaddiscordconf", reload),
-		ACMD_DEF(disablediscord),
 		ACMD_DEF2("reloadbattleconf", reload),
 		ACMD_DEF2("reloadstatusdb", reload),
 		ACMD_DEF2("reloadpcdb", reload),

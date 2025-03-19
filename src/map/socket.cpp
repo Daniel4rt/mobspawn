@@ -18,7 +18,7 @@
 #include <netinet/tcp.h>
 	#include <net/if.h>
 	#include <unistd.h>
-	#include <sys/ioctl.h>
+#include <sys/ioctl.h>
 	#include <netdb.h>
 	#include <arpa/inet.h>
 
@@ -209,19 +209,14 @@ char* sErr(int code)
 	#define MSG_NOSIGNAL 0
 #endif
 
-// Eliminar definiciones duplicadas
-// int null_recv(int fd) { return 0; }
-// int null_send(int fd) { return 0; }
-// int null_parse(int fd) { return 0; }
+fd_set readfds;
+int fd_max;
+time_t last_tick;
+time_t stall_time = 60;
 
-// fd_set readfds;
-// int fd_max;
-// time_t last_tick;
-// time_t stall_time = 60;
-// uint32 addr_[16];
-// int naddr_ = 0;
+uint32 addr_[16];   // ip addresses of local host (host byte order)
+int naddr_ = 0;   // # of ip addresses
 
-// struct socket_data* session[FD_SETSIZE];
 
 // (^~_~^) Gepard Shield Start
 
@@ -618,6 +613,8 @@ static time_t socket_data_last_tick = 0;
 // The connection is closed if it goes over the limit.
 #define WFIFO_MAX (1*1024*1024)
 
+struct socket_data* session[FD_SETSIZE];
+
 #ifdef SEND_SHORTLIST
 int send_shortlist_array[FD_SETSIZE];// we only support FD_SETSIZE sockets, limit the array to that
 size_t send_shortlist_count = 0;// how many fd's are in the shortlist
@@ -642,6 +639,10 @@ const char* error_msg(void)
 /*======================================
  *	CORE : Default processing functions
  *--------------------------------------*/
+int null_recv(int fd) { return 0; }
+int null_send(int fd) { return 0; }
+int null_parse(int fd) { return 0; }
+
 ParseFunc default_func_parse = null_parse;
 
 void set_defaultparse(ParseFunc defaultparse)

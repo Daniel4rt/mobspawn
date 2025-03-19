@@ -30,11 +30,11 @@
 #include "log.hpp"
 #include "log.hpp"
 #include "map.hpp"
+#include "mapreg.hpp"
 #include "mob.hpp"
 #include "pc.hpp"
 #include "pet.hpp"
 #include "script.hpp" // script_config
-#include "mapreg.hpp"
 
 struct npc_data* fake_nd;
 
@@ -2659,7 +2659,7 @@ struct npc_data* npc_add_warp(char* name, short from_mapid, short from_x, short 
  * @param w1 : word 1 before tab (<from map name>,<fromX>,<fromY>,<facing>)
  * @param w2 : word 2 before tab (warp), keyword that sent us in this parsing
  * @param w3 : word 3 before tab (<warp name>)
- * @param w4 : word 4 before tab (<spanx>,<spany>,<to map name>,<toX>,<toY>)
+ * @param w4 : word 4 before tab (<spanx>,<spany>,<to mapname>,<toX>,<toY>)
  * @param start : index to start parsing
  * @param buffer : lines to parses
  * @param filepath : filename with path wich we are parsing
@@ -3906,12 +3906,12 @@ void npc_parse_mob2(struct spawn_data* mob)
 			if(1 == mapreg_readreg(reference_uid( add_str( mapregname.c_str() ), 0 ))){ //1 = dead - 2 = alive
 				long int timer = static_cast<long int>(mapreg_readreg(reference_uid(add_str(mapregname.c_str()),3)));
 				// Usar el tiempo de muerte almacenado si existe
-				if (mvp_death_timers.find(md->bl.id) != mvp_death_timers.end()) {
-					timer = mvp_death_timers[md->bl.id];
+ 				if (mvp_death_timers.find(md->bl.id) != mvp_death_timers.end()) {
+ 					timer = mvp_death_timers[md->bl.id];
 				} else {
-					// Guardar el tiempo de muerte del MVP
-					mvp_death_timers[md->bl.id] = timer;
-				}
+ 					// Guardar el tiempo de muerte del MVP
+ 					mvp_death_timers[md->bl.id] = timer;
+ 				}
 				long int now = static_cast<long int>(time(NULL));
 				long int difftime = mob->delay1; //Base respawn time
 				if (mob->delay2) //random variance
@@ -3930,7 +3930,7 @@ void npc_parse_mob2(struct spawn_data* mob)
 						md->bl.y= old_pos_y;
 					}
 					difftime = abs(difftime)*1000;
-						//Apply the spawn delay fix
+					//Apply the spawn delay fix
 					if (status_has_mode(&md->status,MD_STATUS_IMMUNE)) { // Status Immune
 						if (battle_config.boss_spawn_delay != 100) {
 							difftime = difftime/100*battle_config.boss_spawn_delay;

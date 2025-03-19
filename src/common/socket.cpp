@@ -18,7 +18,7 @@
 #include <netinet/tcp.h>
 	#include <net/if.h>
 	#include <unistd.h>
-	#include <sys/ioctl.h>
+#include <sys/ioctl.h>
 	#include <netdb.h>
 	#include <arpa/inet.h>
 
@@ -68,10 +68,6 @@ static int sock_arr_len = 0;
 /// @param fd Target fd.
 /// @return Socket
 #define fd2sock(fd) sock_arr[fd]
-
-SOCKET fd2sock_ext(int fd) {
-	return fd2sock(fd);
-}
 
 /// Returns the first fd associated with the socket.
 /// Returns -1 if the socket is not found.
@@ -922,7 +918,7 @@ int make_listen_bind(uint32 ip, uint16 port)
 	return fd;
 }
 
-int make_connection(uint32 ip, uint16 port, bool silent,int timeout, bool nonblocking) {
+int make_connection(uint32 ip, uint16 port, bool silent,int timeout) {
 	struct sockaddr_in remote_address;
 	int fd;
 	int result;
@@ -1021,13 +1017,8 @@ int make_connection(uint32 ip, uint16 port, bool silent,int timeout, bool nonblo
 	}
 
 	//Now the socket can be made non-blocking. [Skotlex]
-	if (nonblocking)
-		set_nonblocking(fd, 1);
+	set_nonblocking(fd, 1);
 #endif
-
-	if (nonblocking && errno == EINPROGRESS) {
-		return fd;
-	}
 
 	if (fd_max <= fd) fd_max = fd + 1;
 	sFD_SET(fd,&readfds);
@@ -1693,8 +1684,7 @@ void do_close(int fd)
 		return;// invalid
 
 	flush_fifo(fd); // Try to send what's left (although it might not succeed since it's a nonblocking socket)
-	if (sFD_ISSET(fd, &readfds))
-		sFD_CLR(fd, &readfds);// this needs to be done before closing the socket
+	sFD_CLR(fd, &readfds);// this needs to be done before closing the socket
 	sShutdown(fd, SHUT_RDWR); // Disallow further reads/writes
 	sClose(fd); // We don't really care if these closing functions return an error, we are just shutting down and not reusing this socket.
 	if (session[fd]) delete_session(fd);
