@@ -10655,7 +10655,7 @@ ACMD_FUNC(gepard_unblock_unique_id)
  * Usage:
  * @killcounter activate, deactivate, reset, status, <mobID/mobname> <position>
  */
-ACMD_FUNC(killercount)
+ACMD_FUNC(killcounter)
 {
 	char arg1[CHAT_SIZE_MAX], arg2[CHAT_SIZE_MAX];
 	int position = 0, mob_id = 0;
