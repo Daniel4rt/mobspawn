@@ -211,6 +211,13 @@ struct s_bonus_script_entry {
 	int tid;
 };
 
+// [DanielArt]
+struct killcounter_data {
+	bool active;
+	int mob_id[5];
+	int count[5];
+};
+
 struct map_session_data {
 	struct block_list bl;
 	struct unit_data ud;
@@ -767,6 +774,8 @@ struct map_session_data {
 	uint32* hatEffectIDs;
 	uint8 hatEffectCount;
 #endif
+
+	struct killcounter_data *killcounter; // [DanielArt]
 };
 
 extern struct eri *pc_sc_display_ers; /// Player's SC display table

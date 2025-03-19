@@ -4001,7 +4001,7 @@ ACMD_FUNC(whosell)
 				clif_viewpoint(sd, 1, 1, b_sd[i]->bl.x, b_sd[i]->bl.y, i, 0xFFFFFF);
 		}
 		else
-			sprintf(output, "[%d] '%s' no está en tiendas...", item_array[i]->nameid, item_array[i]->jname);
+			sprintf(output, "[%d] '%s' no estÃ¡ en tiendas...", item_array[i]->nameid, item_array[i]->jname);
 
 		clif_displaymessage(sd->fd, output);
 	}
@@ -10648,6 +10648,76 @@ ACMD_FUNC(gepard_unblock_unique_id)
 	return 0;
 }
 
+/**
+ * Monster Kill Counter [DanielArt]
+ * Count the number of monsters you killed during a session.
+ * You can choose the number of slot that you want to allow to the players (default is 5 slots). It allows you to follow a counter for more than only one monster at the same time.
+ * Usage:
+ * @killcounter activate, deactivate, reset, status, <mobID/mobname> <position>
+ */
+ACMD_FUNC(killercount)
+{
+	char arg1[CHAT_SIZE_MAX], arg2[CHAT_SIZE_MAX];
+	int position = 0, mob_id = 0;
+	struct map_session_data *sd = NULL;
+
+	nullpo_retr(-1, sd);
+
+	if (!message || !*message) {
+		clif_displaymessage(fd, "Usage: @killcounter <command>");
+		clif_displaymessage(fd, "Commands: activate, deactivate, reset, status, <mobID/mobname> <position>");
+		return -1;
+	}
+
+	if (sscanf(message, "%15s %15s", arg1, arg2) < 1) {
+		clif_displaymessage(fd, "Invalid command. Use @killcounter <command>.");
+		return -1;
+	}
+
+	if (strcmpi(arg1, "activate") == 0) {
+		sd->state.killcounter_active = true;
+		clif_displaymessage(fd, "Kill counter activated.");
+	} else if (strcmpi(arg1, "deactivate") == 0) {
+		sd->state.killcounter_active = false;
+		clif_displaymessage(fd, "Kill counter deactivated.");
+	} else if (strcmpi(arg1, "reset") == 0) {
+		if (*arg2) {
+			position = atoi(arg2);
+			if (position < 1 || position > 5) {
+				clif_displaymessage(fd, "Invalid position. Use a value between 1 and 5.");
+				return -1;
+			}
+			sd->killcounter[position - 1] = 0;
+			clif_displaymessage(fd, "Kill counter reset for position.");
+		} else {
+			memset(sd->killcounter, 0, sizeof(sd->killcounter));
+			clif_displaymessage(fd, "All kill counters reset.");
+		}
+	} else if (strcmpi(arg1, "status") == 0) {
+		char output[CHAT_SIZE_MAX];
+		for (int i = 0; i < 5; i++) {
+			sprintf(output, "Position %d: %d kills", i + 1, sd->killcounter[i]);
+			clif_displaymessage(fd, output);
+		}
+	} else {
+		mob_id = atoi(arg1);
+		if (mob_id <= 0) {
+			clif_displaymessage(fd, "Invalid mob ID or name.");
+			return -1;
+		}
+		position = atoi(arg2);
+		if (position < 1 || position > 5) {
+			clif_displaymessage(fd, "Invalid position. Use a value between 1 and 5.");
+			return -1;
+		}
+		sd->killcounter_mob[position - 1] = mob_id;
+		sd->killcounter[position - 1] = 0;
+		clif_displaymessage(fd, "Kill counter started for the specified mob and position.");
+	}
+
+	return 0;
+}
+
 // (^~_~^) Gepard Shield End
 
 #include "../custom/atcommand.inc"
@@ -10978,6 +11048,7 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(agitend3),
 		ACMD_DEFR(limitedsale, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 		ACMD_DEFR(changedress, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
+		ACMD_DEF(killcounter),
 	};
 	AtCommandInfo* atcommand;
 	int i;

@@ -2439,6 +2439,28 @@ void mob_damage(struct mob_data *md, struct block_list *src, int damage)
 }
 
 /*==========================================
+ * Procesa el contador de monstruos [DanielArt]
+ * sd: usuario que mató al monstruo
+ * mob_id: id del monstruo
+ *------------------------------------------*/
+void mob_update_killcounter(struct map_session_data *sd, int mob_id) {
+	if (!sd || !sd->killcounter || !sd->killcounter->active)
+		return;
+
+	for (int i = 0; i < 5; i++) {
+		if (sd->killcounter->mob_id[i] == mob_id) {
+			sd->killcounter->count[i]++;
+			return;
+		}
+		if (sd->killcounter->mob_id[i] == 0) {
+			sd->killcounter->mob_id[i] = mob_id;
+			sd->killcounter->count[i] = 1;
+			return;
+		}
+	}
+}
+
+/*==========================================
  * Signals death of mob.
  * type&1 -> no drops, type&2 -> no exp
  *------------------------------------------*/
@@ -2789,6 +2811,14 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 			// Announce first, or else ditem will be freed. [Lance]
 			// By popular demand, use base drop rate for autoloot code. [Skotlex]
 			mob_item_drop(md, dlist, ditem, 0, battle_config.autoloot_adjust ? drop_rate : md->db->dropitem[i].p, homkillonly);
+		}
+
+		// Killcounter [DanielArt]
+		if (src && src->type == BL_PC) {
+			struct map_session_data *sd = BL_CAST(BL_PC, src);
+			if (sd && sd->killcounter && sd->killcounter->active) {
+				mob_update_killcounter(sd, md->class_);
+			}
 		}
 
 		// Ore Discovery [Celest]

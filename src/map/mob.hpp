@@ -380,4 +380,6 @@ void mob_setdropitem_option(struct item *itm, struct s_mob_drop *mobdrop);
 
 #define CHK_MOBSIZE(size) ((size) >= SZ_SMALL && (size) < SZ_MAX) /// Check valid Monster Size
 
+void mob_update_killcounter(struct map_session_data *sd, int mob_id); // [DanielArt]
+
 #endif /* MOB_HPP */
