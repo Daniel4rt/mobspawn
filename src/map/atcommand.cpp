@@ -10659,7 +10659,6 @@ ACMD_FUNC(killcounter)
 {
 	char arg1[CHAT_SIZE_MAX], arg2[CHAT_SIZE_MAX];
 	int position = 0, mob_id = 0;
-	char output[CHAT_SIZE_MAX];
 
 	nullpo_retr(-1, sd);
 
@@ -10695,8 +10694,8 @@ ACMD_FUNC(killcounter)
 		if (*arg2) {
 			position = atoi(arg2);
 			if (position < 1 || position > MAX_KILLCOUNT_ARRAY) {
-				sprintf(output, "Invalid position. Use a value between 1 and %d.", MAX_KILLCOUNT_ARRAY);
-				clif_displaymessage(fd, output);
+				sprintf(atcmd_output, "Invalid position. Use a value between 1 and %d.", MAX_KILLCOUNT_ARRAY);
+				clif_displaymessage(fd, atcmd_output);
 				return -1;
 			}
 			sd->killcounter[position - 1].mob_id = 0;
@@ -10711,24 +10710,22 @@ ACMD_FUNC(killcounter)
 		}
 	} else if (strcmpi(arg1, "status") == 0) {
 		for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
-			sprintf(output, "Position %d: Mob ID %d, Name <%s>, %d kills", i + 1, sd->killcounter[i].mob_id, mob_db(sd->killcounter[i].mob_id)->jname, sd->killcounter[i].count);
-			clif_displaymessage(fd, output);
+			sprintf(atcmd_output, "Position %d: Mob ID %d, Name <%s>, %d kills", i + 1, sd->killcounter[i].mob_id, mob_db(sd->killcounter[i].mob_id)->jname, sd->killcounter[i].count);
+			clif_displaymessage(fd, atcmd_output);
 		}
 	} else {
 		mob_id = atoi(arg1);
-		if (mob_id <= 0) {
-			// Try to find mob ID by name
-			struct mob_db* mob = mobdb_searchname(arg1);
-			if (mob == NULL) {
-				clif_displaymessage(fd, "Invalid mob ID or name.");
-				return -1;
-			}
-			mob_id = mob->id;
+		if ((mob_id = atoi(mob_name)) == 0)
+			mob_id = mobdb_searchname(mob_name);
+		if( mobdb_checkid(mob_id) == 0){
+			snprintf(atcmd_output, sizeof atcmd_output, msg_txt(sd,1219),mob_name); // Invalid mob ID %s!
+			clif_displaymessage(fd, atcmd_output);
+			return -1;
 		}
 		position = atoi(arg2);
 		if (position < 1 || position > MAX_KILLCOUNT_ARRAY) {
-			sprintf(output, "Invalid position. Use a value between 1 and %d.", MAX_KILLCOUNT_ARRAY);
-			clif_displaymessage(fd, output);
+			sprintf(atcmd_output, "Invalid position. Use a value between 1 and %d.", MAX_KILLCOUNT_ARRAY);
+			clif_displaymessage(fd, atcmd_output);
 			return -1;
 		}
 		// Check for duplicate mob_id
