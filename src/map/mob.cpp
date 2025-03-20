@@ -2447,14 +2447,14 @@ void mob_update_killcounter(struct map_session_data *sd, int mob_id) {
 	if (!sd || !sd->killcounter || !sd->killcounter->active)
 		return;
 
-	for (int i = 0; i < 5; i++) {
-		if (sd->killcounter->mob_id[i] == mob_id) {
-			sd->killcounter->count[i]++;
+	for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
+		if (sd->killcounter[i].mob_id == mob_id) {
+			sd->killcounter[i].count++;
 			return;
 		}
-		if (sd->killcounter->mob_id[i] == 0) {
-			sd->killcounter->mob_id[i] = mob_id;
-			sd->killcounter->count[i] = 1;
+		if (sd->killcounter[i].mob_id == 0) {
+			sd->killcounter[i].mob_id = mob_id;
+			sd->killcounter[i].count = 1;
 			return;
 		}
 	}
