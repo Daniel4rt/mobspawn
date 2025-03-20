@@ -33,6 +33,7 @@ enum sc_type : int16;
 #define MAX_SPIRITBALL 15 /// Max spirit balls
 #define MAX_DEVOTION 5 /// Max Devotion slots
 #define MAX_SPIRITCHARM 10 /// Max spirit charms
+#define MAX_KILLCOUNT_ARRAY 5 /// Max Kill Counter Array Size [DanielArt]
 
 #define LANGTYPE_VAR "#langtype"
 #define CASHPOINT_VAR "#CASHPOINTS"
@@ -774,7 +775,7 @@ struct map_session_data {
 	struct {
 		int mob_id;
 		int count;
-	} killcounter;	// [DanielArt]
+	} killcounter[MAX_KILLCOUNT_ARRAY]; // [DanielArt]
 };
 
 extern struct eri *pc_sc_display_ers; /// Player's SC display table

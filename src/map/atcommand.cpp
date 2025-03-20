@@ -10659,7 +10659,6 @@ ACMD_FUNC(killcounter)
 {
 	char arg1[CHAT_SIZE_MAX], arg2[CHAT_SIZE_MAX];
 	int position = 0, mob_id = 0;
-	struct map_session_data *sd = NULL;
 
 	nullpo_retr(-1, sd);
 
