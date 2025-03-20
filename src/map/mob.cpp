@@ -2452,12 +2452,9 @@ void mob_update_killcounter(struct map_session_data *sd, int mob_id) {
 			sd->killcounter[i].count++;
 			return;
 		}
-		if (sd->killcounter[i].mob_id == 0) {
-			sd->killcounter[i].mob_id = mob_id;
-			sd->killcounter[i].count = 1;
-			return;
-		}
 	}
+
+	return;
 }
 
 /*==========================================

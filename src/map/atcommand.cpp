@@ -10675,6 +10675,17 @@ ACMD_FUNC(killcounter)
 	}
 
 	if (strcmpi(arg1, "activate") == 0) {
+		bool has_active_slot = false;
+		for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
+			if (sd->killcounter[i].mob_id != 0) {
+				has_active_slot = true;
+				break;
+			}
+		}
+		if (!has_active_slot) {
+			clif_displaymessage(fd, "Error: No mob ID defined. Use @killcounter <mobID> <position> to start tracking.");
+			return -1;
+		}
 		sd->state.killcounter_active = true;
 		clif_displaymessage(fd, "Kill counter activated.");
 	} else if (strcmpi(arg1, "deactivate") == 0) {
@@ -10714,6 +10725,13 @@ ACMD_FUNC(killcounter)
 			sprintf(output, "Invalid position. Use a value between 1 and %d.", MAX_KILLCOUNT_ARRAY);
 			clif_displaymessage(fd, output);
 			return -1;
+		}
+		// Check for duplicate mob_id
+		for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
+			if (sd->killcounter[i].mob_id == mob_id) {
+				clif_displaymessage(fd, "Error: Mob ID is already being tracked in another position.");
+				return -1;
+			}
 		}
 		sd->killcounter[position - 1].mob_id = mob_id;
 		sd->killcounter[position - 1].count = 0;
