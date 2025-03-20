@@ -2444,7 +2444,7 @@ void mob_damage(struct mob_data *md, struct block_list *src, int damage)
  * mob_id: id del monstruo
  *------------------------------------------*/
 void mob_update_killcounter(struct map_session_data *sd, int mob_id) {
-	if (!sd || !sd->killcounter || !sd->killcounter->active)
+	if (!sd || !sd->killcounter || !sd->state.killcounter_active)
 		return;
 
 	for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
@@ -2816,8 +2816,8 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 		// Killcounter [DanielArt]
 		if (src && src->type == BL_PC) {
 			struct map_session_data *sd = BL_CAST(BL_PC, src);
-			if (sd && sd->killcounter && sd->killcounter->active) {
-				mob_update_killcounter(sd, md->class_);
+			if (sd && sd->killcounter && sd->state.killcounter_active) {
+				mob_update_killcounter(sd, md->mob_id);
 			}
 		}
 
