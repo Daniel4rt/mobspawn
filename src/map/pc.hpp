@@ -211,12 +211,7 @@ struct s_bonus_script_entry {
 	int tid;
 };
 
-// [DanielArt]
-struct killcounter_data {
-	bool active;
-	int mob_id[5];
-	int count[5];
-};
+
 
 struct map_session_data {
 	struct block_list bl;
@@ -297,6 +292,7 @@ struct map_session_data {
 		unsigned int bg_afk : 1; // Moved here to reduce searchs
 		unsigned int only_walk : 1; // [Zephyrus] Block Skills and Item usage to a player
 		unsigned int last_teleport : 1; // [Easycore]
+		bool killcounter_active; // Flag to track if killcounter is active
 	} state;
 	struct {
 		unsigned char no_weapon_damage, no_magic_damage, no_misc_damage;
@@ -775,7 +771,10 @@ struct map_session_data {
 	uint8 hatEffectCount;
 #endif
 
-	struct killcounter_data *killcounter; // [DanielArt]
+	struct {
+		int mob_id;
+		int count;
+	} killcounter;	// [DanielArt]
 };
 
 extern struct eri *pc_sc_display_ers; /// Player's SC display table

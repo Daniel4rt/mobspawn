@@ -10687,16 +10687,20 @@ ACMD_FUNC(killcounter)
 				clif_displaymessage(fd, "Invalid position. Use a value between 1 and 5.");
 				return -1;
 			}
-			sd->killcounter[position - 1] = 0;
+			sd->killcounter[position - 1].mob_id = 0;
+			sd->killcounter[position - 1].count = 0;
 			clif_displaymessage(fd, "Kill counter reset for position.");
 		} else {
-			memset(sd->killcounter, 0, sizeof(sd->killcounter));
+			for (int i = 0; i < 5; i++) {
+				sd->killcounter[i].mob_id = 0;
+				sd->killcounter[i].count = 0;
+			}
 			clif_displaymessage(fd, "All kill counters reset.");
 		}
 	} else if (strcmpi(arg1, "status") == 0) {
 		char output[CHAT_SIZE_MAX];
 		for (int i = 0; i < 5; i++) {
-			sprintf(output, "Position %d: %d kills", i + 1, sd->killcounter[i]);
+			sprintf(output, "Position %d: Mob ID %d, %d kills", i + 1, sd->killcounter[i].mob_id, sd->killcounter[i].count);
 			clif_displaymessage(fd, output);
 		}
 	} else {
@@ -10710,8 +10714,8 @@ ACMD_FUNC(killcounter)
 			clif_displaymessage(fd, "Invalid position. Use a value between 1 and 5.");
 			return -1;
 		}
-		sd->killcounter_mob[position - 1] = mob_id;
-		sd->killcounter[position - 1] = 0;
+		sd->killcounter[position - 1].mob_id = mob_id;
+		sd->killcounter[position - 1].count = 0;
 		clif_displaymessage(fd, "Kill counter started for the specified mob and position.");
 	}
 
