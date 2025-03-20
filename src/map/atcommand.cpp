@@ -10683,7 +10683,7 @@ ACMD_FUNC(killcounter)
 			}
 		}
 		if (!has_active_slot) {
-			clif_displaymessage(fd, "Error: No mob ID defined. Use @killcounter <mobID> <position> to start tracking.");
+			clif_displaymessage(fd, "Error: No mob ID defined. Use @killcounter <mobID/mobname> <position> to start tracking.");
 			return -1;
 		}
 		sd->state.killcounter_active = true;
@@ -10711,14 +10711,19 @@ ACMD_FUNC(killcounter)
 		}
 	} else if (strcmpi(arg1, "status") == 0) {
 		for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
-			sprintf(output, "Position %d: Mob ID %d, %d kills", i + 1, sd->killcounter[i].mob_id, sd->killcounter[i].count);
+			sprintf(output, "Position %d: Mob ID %d, Name <%s>, %d kills", i + 1, sd->killcounter[i].mob_id, mob_db(sd->killcounter[i].mob_id)->jname, sd->killcounter[i].count);
 			clif_displaymessage(fd, output);
 		}
 	} else {
 		mob_id = atoi(arg1);
 		if (mob_id <= 0) {
-			clif_displaymessage(fd, "Invalid mob ID or name.");
-			return -1;
+			// Try to find mob ID by name
+			struct mob_db* mob = mobdb_searchname(arg1);
+			if (mob == NULL) {
+				clif_displaymessage(fd, "Invalid mob ID or name.");
+				return -1;
+			}
+			mob_id = mob->id;
 		}
 		position = atoi(arg2);
 		if (position < 1 || position > MAX_KILLCOUNT_ARRAY) {

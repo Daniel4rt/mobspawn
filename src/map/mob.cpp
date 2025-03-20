@@ -2810,14 +2810,6 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 			mob_item_drop(md, dlist, ditem, 0, battle_config.autoloot_adjust ? drop_rate : md->db->dropitem[i].p, homkillonly);
 		}
 
-		// Killcounter [DanielArt]
-		if (src && src->type == BL_PC) {
-			struct map_session_data *sd = BL_CAST(BL_PC, src);
-			if (sd && sd->killcounter && sd->state.killcounter_active) {
-				mob_update_killcounter(sd, md->mob_id);
-			}
-		}
-
 		// Ore Discovery [Celest]
 		if (sd == mvp_sd && pc_checkskill(sd,BS_FINDINGORE)>0 && battle_config.finding_ore_rate/10 >= rnd()%10000) {
 			struct s_mob_drop mobdrop;
@@ -2889,6 +2881,13 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 		for (i = 0; i < md->lootitem_count; i++)
 			mob_item_drop(md, dlist, mob_setlootitem(&md->lootitems[i], md->mob_id), 1, 10000, homkillonly);
 		add_timer(tick + (!battle_config.delay_battle_damage?500:0), mob_delay_item_drop, 0, (intptr_t)dlist);
+	}
+
+	// Kill counter [DanielArt]
+	if (src && src->type == BL_PC) {
+		if (sd && sd->killcounter && sd->state.killcounter_active) {
+			mob_update_killcounter(sd, md->mob_id);
+		}
 	}
 
 	if(mvp_sd && md->db->mexp > 0 && !md->special_state.ai) {
