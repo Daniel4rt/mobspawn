@@ -1567,12 +1567,7 @@ void pc_reg_received(struct map_session_data *sd)
 
 	// Killer Counter [DanielArt]
 	for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
-		sd->state.killcounter_active = pc_readglobalreg(sd, add_str("KC_STATUS"));
-		char mobid_var[5], count_var[32];
-		sprintf(mobid_var, "KC_MOBID_%d", i);
-		sprintf(count_var, "KC_COUNT_%d", i);
-		sd->killcounter[i].mob_id = pc_readglobalreg(sd, add_str(mobid_var));
-		sd->killcounter[i].count = pc_readglobalreg(sd, add_str(count_var));
+		mob_refresh_variables(sd, i);
 	}
 
 	sd->langtype = pc_readaccountreg(sd, add_str(LANGTYPE_VAR));
