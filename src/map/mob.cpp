@@ -2450,6 +2450,8 @@ void mob_update_killcounter(struct map_session_data *sd, int mob_id) {
 	for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
 		if (sd->killcounter[i].mob_id == mob_id) {
 			sd->killcounter[i].count++;
+			sprintf(count_var, "KC_COUNT_%d", i);
+			pc_setglobalreg(sd, add_str(count_var), sd->killcounter[i].count);
 			return;
 		}
 	}
