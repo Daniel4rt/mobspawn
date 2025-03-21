@@ -10710,7 +10710,11 @@ ACMD_FUNC(killcounter)
 		}
 	} else if (strcmpi(mob, "status") == 0) {
 		for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
-			sprintf(atcmd_output, "Position %d: Mob ID %d, Name <%s>, %d kills", i + 1, sd->killcounter[i].mob_id, mob_db(sd->killcounter[i].mob_id)->jname, sd->killcounter[i].count);
+			if (sd->killcounter[i].mob_id == 0) {
+				sprintf(atcmd_output, "Position %d: <Empty>", i + 1);
+			} else {
+				sprintf(atcmd_output, "Position %d: Mob ID %d, Name <%s>, %d kills", i + 1, sd->killcounter[i].mob_id, mob_db(sd->killcounter[i].mob_id)->jname, sd->killcounter[i].count);
+			}
 			clif_displaymessage(fd, atcmd_output);
 		}
 	} else {
