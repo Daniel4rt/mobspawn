@@ -10658,6 +10658,7 @@ ACMD_FUNC(gepard_unblock_unique_id)
 ACMD_FUNC(killcounter)
 {
 	char mob[CHAT_SIZE_MAX], pos[CHAT_SIZE_MAX];
+	char mobid_var[5], count_var[32];
 	int position = 0, mob_id = 0;
 
 	nullpo_retr(-1, sd);
@@ -10686,9 +10687,11 @@ ACMD_FUNC(killcounter)
 			return -1;
 		}
 		sd->state.killcounter_active = true;
+		pc_setglobalreg(sd, add_str("KC_STATUS"), 1)
 		clif_displaymessage(fd, "Kill counter activated.");
 	} else if (strcmpi(mob, "deactivate") == 0) {
 		sd->state.killcounter_active = false;
+		pc_setglobalreg(sd, add_str("KC_STATUS"), 0);
 		clif_displaymessage(fd, "Kill counter deactivated.");
 	} else if (strcmpi(mob, "reset") == 0) {
 		if (*pos) {
@@ -10700,20 +10703,28 @@ ACMD_FUNC(killcounter)
 			}
 			sd->killcounter[position - 1].mob_id = 0;
 			sd->killcounter[position - 1].count = 0;
+			sprintf(mobid_var, "KC_MOBID_%d", position - 1);
+			sprintf(count_var, "KC_COUNT_%d", position - 1);
+			pc_setglobalreg(sd, add_str(mobid_var), 0);
+			pc_setglobalreg(sd, add_str(count_var), 0);
 			clif_displaymessage(fd, "Kill counter reset for position.");
 		} else {
 			for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
 				sd->killcounter[i].mob_id = 0;
 				sd->killcounter[i].count = 0;
+				sprintf(mobid_var, "KC_MOBID_%d", i);
+				sprintf(count_var, "KC_COUNT_%d", i);
+				pc_setglobalreg(sd, add_str(mobid_var), 0);
+				pc_setglobalreg(sd, add_str(count_var), 0);
 			}
 			clif_displaymessage(fd, "All kill counters reset.");
 		}
 	} else if (strcmpi(mob, "status") == 0) {
 		for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
 			if (sd->killcounter[i].mob_id == 0) {
-				sprintf(atcmd_output, "Position %d: <Empty>", i + 1);
+				sprintf(atcmd_output, "> [%d]: <Empty>", i + 1);
 			} else {
-				sprintf(atcmd_output, "Position %d: Mob ID %d, Name <%s>, %d kills", i + 1, sd->killcounter[i].mob_id, mob_db(sd->killcounter[i].mob_id)->jname, sd->killcounter[i].count);
+				sprintf(atcmd_output, "> [%d]: <%s> (%d), [%d] kills", i + 1, mob_db(sd->killcounter[i].mob_id)->jname, sd->killcounter[i].mob_id, sd->killcounter[i].count);
 			}
 			clif_displaymessage(fd, atcmd_output);
 		}
@@ -10741,7 +10752,13 @@ ACMD_FUNC(killcounter)
 		}
 		sd->killcounter[position - 1].mob_id = mob_id;
 		sd->killcounter[position - 1].count = 0;
-		clif_displaymessage(fd, "Kill counter started for the specified mob and position.");
+		sprintf(mobid_var, "KC_MOBID_%d", position - 1);
+		sprintf(count_var, "KC_COUNT_%d", position - 1);
+		pc_setglobalreg(sd, add_str(mobid_var), mob_id);
+		pc_setglobalreg(sd, add_str(count_var), 0);
+		sprintf(atcmd_output, "Kill counter has started for <%s> (%d) in the [%d] position.", mob_db(sd->killcounter[position - 1].mob_id)->jname, sd->killcounter[position - 1].mob_id, position - 1);
+		clif_displaymessage(fd, atcmd_output);
+
 	}
 
 	return 0;

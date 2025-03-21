@@ -1565,6 +1565,16 @@ void pc_reg_received(struct map_session_data *sd)
 	sd->change_level_3rd = pc_readglobalreg(sd, add_str(JOBCHANGE3RD_VAR));
 	sd->die_counter = pc_readglobalreg(sd, add_str(PCDIECOUNTER_VAR));
 
+	// Killer Counter [DanielArt]
+	for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
+		sd->state.killcounter_active = pc_readglobalreg(sd, add_str("KC_STATUS"));
+		char mobid_var[5], count_var[32];
+		sprintf(mobid_var, "KC_MOBID_%d", i);
+		sprintf(count_var, "KC_COUNT_%d", i);
+		sd->killcounter[i].mob_id = pc_readglobalreg(sd, add_str(mobid_var));
+		sd->killcounter[i].count = pc_readglobalreg(sd, add_str(count_var));
+	}
+
 	sd->langtype = pc_readaccountreg(sd, add_str(LANGTYPE_VAR));
 	if (msg_checklangtype(sd->langtype,true) < 0)
 		sd->langtype = 0; //invalid langtype reset to default
