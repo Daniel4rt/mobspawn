@@ -10657,7 +10657,7 @@ ACMD_FUNC(gepard_unblock_unique_id)
  */
 ACMD_FUNC(killcounter)
 {
-	char arg1[CHAT_SIZE_MAX], arg2[CHAT_SIZE_MAX];
+	char mob[CHAT_SIZE_MAX], pos[CHAT_SIZE_MAX];
 	int position = 0, mob_id = 0;
 
 	nullpo_retr(-1, sd);
@@ -10668,12 +10668,12 @@ ACMD_FUNC(killcounter)
 		return -1;
 	}
 
-	if (sscanf(message, "%15s %15s", arg1, arg2) < 1) {
+	if (sscanf(message, "%15s %15s", mob, pos) < 1) {
 		clif_displaymessage(fd, "Invalid command. Use @killcounter <command>.");
 		return -1;
 	}
 
-	if (strcmpi(arg1, "activate") == 0) {
+	if (strcmpi(mob, "activate") == 0) {
 		bool has_active_slot = false;
 		for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
 			if (sd->killcounter[i].mob_id != 0) {
@@ -10687,12 +10687,12 @@ ACMD_FUNC(killcounter)
 		}
 		sd->state.killcounter_active = true;
 		clif_displaymessage(fd, "Kill counter activated.");
-	} else if (strcmpi(arg1, "deactivate") == 0) {
+	} else if (strcmpi(mob, "deactivate") == 0) {
 		sd->state.killcounter_active = false;
 		clif_displaymessage(fd, "Kill counter deactivated.");
-	} else if (strcmpi(arg1, "reset") == 0) {
-		if (*arg2) {
-			position = atoi(arg2);
+	} else if (strcmpi(mob, "reset") == 0) {
+		if (*pos) {
+			position = atoi(pos);
 			if (position < 1 || position > MAX_KILLCOUNT_ARRAY) {
 				sprintf(atcmd_output, "Invalid position. Use a value between 1 and %d.", MAX_KILLCOUNT_ARRAY);
 				clif_displaymessage(fd, atcmd_output);
@@ -10708,21 +10708,21 @@ ACMD_FUNC(killcounter)
 			}
 			clif_displaymessage(fd, "All kill counters reset.");
 		}
-	} else if (strcmpi(arg1, "status") == 0) {
+	} else if (strcmpi(mob, "status") == 0) {
 		for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
 			sprintf(atcmd_output, "Position %d: Mob ID %d, Name <%s>, %d kills", i + 1, sd->killcounter[i].mob_id, mob_db(sd->killcounter[i].mob_id)->jname, sd->killcounter[i].count);
 			clif_displaymessage(fd, atcmd_output);
 		}
 	} else {
-		mob_id = atoi(arg1);
-		if ((mob_id = atoi(mob_name)) == 0)
-			mob_id = mobdb_searchname(mob_name);
+		mob_id = atoi(mob);
+		if ((mob_id = atoi(mob)) == 0)
+			mob_id = mobdb_searchname(mob);
 		if( mobdb_checkid(mob_id) == 0){
 			snprintf(atcmd_output, sizeof atcmd_output, msg_txt(sd,1219),mob_name); // Invalid mob ID %s!
 			clif_displaymessage(fd, atcmd_output);
 			return -1;
 		}
-		position = atoi(arg2);
+		position = atoi(pos);
 		if (position < 1 || position > MAX_KILLCOUNT_ARRAY) {
 			sprintf(atcmd_output, "Invalid position. Use a value between 1 and %d.", MAX_KILLCOUNT_ARRAY);
 			clif_displaymessage(fd, atcmd_output);
