@@ -10675,7 +10675,7 @@ ACMD_FUNC(killcounter)
 
 	// Variable Update
 	for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
-		mob_refresh_variables(sd, i);
+		mob_update_variables(sd, i, 0, 0);
 	}
 
 	if (strcmpi(mob, "activate") == 0) {
@@ -10703,8 +10703,8 @@ ACMD_FUNC(killcounter)
 				clif_displaymessage(fd, atcmd_output);
 				return -1;
 			}
-			mob_update_variables(sd, position - 1, 0, 0);
-			sprintf(atcmd_output, "Kill counter reset for position [%d].", position - 1);
+			mob_update_variables(sd, position, 0, 0);
+			sprintf(atcmd_output, "Kill counter reset for position [%d].", position);
 			clif_displaymessage(fd, atcmd_output);
 		} else {
 			for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
@@ -10714,7 +10714,6 @@ ACMD_FUNC(killcounter)
 		}
 	} else if (strcmpi(mob, "status") == 0) {
 		for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
-			mob_refresh_variables(sd, i);
 			if (sd->killcounter[i].mob_id == 0) {
 				sprintf(atcmd_output, "> [%d]: <Empty>", i + 1);
 			} else {

@@ -2441,25 +2441,29 @@ void mob_damage(struct mob_data *md, struct block_list *src, int damage)
 /*==========================================
  * Actualiza y gestiona las variables permanentes de un usuario [DanielArt]
  *------------------------------------------*/
-void mob_refresh_variables(struct map_session_data *sd, int position)
-{
-	char mobid_var[5], count_var[32];
-	sd->state.killcounter_active = pc_readglobalreg(sd, add_str("KC_STATUS"));
-	sprintf(mobid_var, "KC_MOBID_%d", position);
-	sprintf(count_var, "KC_COUNT_%d", position);
-	sd->killcounter[position].mob_id = pc_readglobalreg(sd, add_str(mobid_var));
-	sd->killcounter[position].count = pc_readglobalreg(sd, add_str(count_var));
-
-	return;
-}
-
 void mob_update_variables(struct map_session_data *sd, int position, int mob_id, int count)
 {
 	char mobid_var[5], count_var[32];
-	sprintf(mobid_var, "KC_MOBID_%d", position;
+
+	// No player
+	if(!sd)
+		return;
+
+	// Declaración de variables dinámicas
+	sprintf(mobid_var, "KC_MOBID_%d", position);
 	sprintf(count_var, "KC_COUNT_%d", position);
-	pc_setglobalreg(sd, add_str(mobid_var), mob_id);
-	pc_setglobalreg(sd, add_str(count_var), count);
+
+	// Si hay mob_id, registra nuevos valores
+	if(mob_id) {
+		pc_setglobalreg(sd, add_str(mobid_var), mob_id);
+		pc_setglobalreg(sd, add_str(count_var), count);
+	}
+	
+	sd->state.killcounter_active = pc_readglobalreg(sd, add_str("KC_STATUS"));
+
+	// Registra los valores de la variable permanente a la variable temporal de usuario
+	sd->killcounter[position].mob_id = pc_readglobalreg(sd, add_str(mobid_var));
+	sd->killcounter[position].count = pc_readglobalreg(sd, add_str(count_var));
 
 	return;
 }
@@ -2481,7 +2485,6 @@ void mob_update_killcounter(struct map_session_data *sd, int mob_id) {
 		return;
 
 	for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
-		mob_refresh_variables(sd, i);
 		if (sd->killcounter[i].mob_id == mob_id) {
 			sd->killcounter[i].count++;
 			mob_update_variables(sd, i, sd->killcounter[i].mob_id, sd->killcounter[i].count);

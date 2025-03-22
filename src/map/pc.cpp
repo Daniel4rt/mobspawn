@@ -1567,7 +1567,7 @@ void pc_reg_received(struct map_session_data *sd)
 
 	// Killer Counter [DanielArt]
 	for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
-		mob_refresh_variables(sd, i);
+		mob_update_variables(sd, i, 0, 0);
 	}
 
 	sd->langtype = pc_readaccountreg(sd, add_str(LANGTYPE_VAR));
