@@ -2441,7 +2441,7 @@ void mob_damage(struct mob_data *md, struct block_list *src, int damage)
 /*==========================================
  * Actualiza y gestiona las variables permanentes de un usuario [DanielArt]
  *------------------------------------------*/
-void mob_update_variables(struct map_session_data *sd, int position, int mob_id, int count)
+void mob_update_variables(struct map_session_data *sd, int position, int mob_id, int count, bool reset)
 {
 	char mobid_var[5], count_var[32];
 
@@ -2453,12 +2453,14 @@ void mob_update_variables(struct map_session_data *sd, int position, int mob_id,
 	sprintf(mobid_var, "KC_MOBID_%d", position);
 	sprintf(count_var, "KC_COUNT_%d", position);
 
-	// Si hay mob_id, registra nuevos valores
-	if(mob_id) {
+	if(reset) { // Reinicia las variables directamente de la position definida
+		pc_setglobalreg(sd, add_str(mobid_var), 0);
+		pc_setglobalreg(sd, add_str(count_var), 0);
+	} else if(mob_id) { // Si hay mob_id, define los nuevos valores
 		pc_setglobalreg(sd, add_str(mobid_var), mob_id);
 		pc_setglobalreg(sd, add_str(count_var), count);
 	}
-	
+
 	sd->state.killcounter_active = pc_readglobalreg(sd, add_str("KC_STATUS"));
 
 	// Registra los valores de la variable permanente a la variable temporal de usuario

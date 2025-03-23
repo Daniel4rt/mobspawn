@@ -10696,21 +10696,36 @@ ACMD_FUNC(killcounter)
 		mob_killcount_status(sd, 0);
 		clif_displaymessage(fd, "Kill counter deactivated.");
 	} else if (strcmpi(mob, "reset") == 0) {
-		if (*pos) {
+		if (strcmpi(pos, "all") == 0) {
+			for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
+				mob_update_variables(sd, i, 0, 0, true);
+			}
+			// Al no haber contadores, desactiva el contador para prevenir bugs.
+			mob_killcount_status(sd, 0);
+			clif_displaymessage(fd, "All kill counters reset.");
+		} else if (*pos) {
 			position = atoi(pos);
 			if (position < 1 || position > MAX_KILLCOUNT_ARRAY) {
 				sprintf(atcmd_output, "Invalid position. Use a value between 1 and %d.", MAX_KILLCOUNT_ARRAY);
 				clif_displaymessage(fd, atcmd_output);
 				return -1;
 			}
-			mob_update_variables(sd, position, 0, 0);
+			mob_update_variables(sd, position, 0, 0, true);
 			sprintf(atcmd_output, "Kill counter reset for position [%d].", position);
 			clif_displaymessage(fd, atcmd_output);
-		} else {
-			for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
-				mob_update_variables(sd, i, 0, 0);
+			int check_active_var = 0;
+			for( int i = 0; i < MAX_KILLCOUNT_ARRAY; i++ ) {
+				if( sd->killcounter[i].mob_id == 0 ) {
+					check_active_var++;
+				}
 			}
-			clif_displaymessage(fd, "All kill counters reset.");
+			// Desactiva el contador, si acaso no hay contadores activos, para prevenir bugs.
+			if(check_active_var >= MAX_KILLCOUNT_ARRAY) {
+				mob_killcount_status(sd, 0);
+			}
+		} else {
+			clif_displaymessage(fd, "Invalid command. Use @killcounter reset <position> or @killcounter reset all.");
+			return -1;
 		}
 	} else if (strcmpi(mob, "status") == 0) {
 		for (int i = 0; i < MAX_KILLCOUNT_ARRAY; i++) {
